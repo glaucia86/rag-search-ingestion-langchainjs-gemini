@@ -81,8 +81,7 @@ export class RAGSearch {
     }
 
     try {
-      console.log(`Performing semantic search for: "${query}"`);
-      console.log(`Searching for the ${k} most relevant chunks...`);
+      // Busca semântica silenciosa
 
       // PHASE 1: SIMILARITY SEARCH WITH SCORES
       // Use similaritySearchWithScore to get both documents and scores
@@ -99,10 +98,7 @@ export class RAGSearch {
         });
       }
 
-      console.log(`Find ${formattedResults.length} relevant chunks.`);
-      if (formattedResults.length > 0) {
-        console.log(` Best score result: ${formattedResults[0].score.toFixed(4)}`);
-      }
+      // ${formattedResults.length} chunks encontrados silenciosamente
 
       return formattedResults;
     } catch (error) {
@@ -113,11 +109,9 @@ export class RAGSearch {
 
   async generateAnswer(query: string): Promise<string> {
     try {
-      console.log('STARTING COMPLETE RAG PIPELINE...');
-      console.log('=' .repeat(50));
+      // Pipeline RAG iniciado silenciosamente
 
       // STEP 1: RETRIEVAL
-      console.log('STEP 1: Retrieving relevant context');
       const documents = await this.searchDocuments(query, 10);
 
       if (!documents.length) {
@@ -126,22 +120,17 @@ export class RAGSearch {
       }
 
       // STEP 2: CONTEXT ASSEMBLY
-      console.log('STEP 2: Building context from the chunks found');
       const context = documents.map((doc, index) => {
-        console.log(`   Chunk ${index + 1}: Score ${doc.score.toFixed(4)} - "${doc.content.substring(0, 80)}..."`);
         return doc.content;
       })
       .join('\n\n');
 
-      console.log(`Context assembled: ${context.length} characters total`);
-
-      console.log('STEP 3: Structuring prompts for the LLM');
+      // STEP 3: Estruturando prompts para o LLM
       const fullPrompt = PROMPT_TEMPLATE
         .replace('{contexto}', context)
         .replace('{pergunta}', query);
 
       // STEP 4: GENERATION USING LLM
-      console.log('STEP 4: Generating a response via Google Gemini');
       const messages: ChatMessage[] = [
         { role: 'user', content: fullPrompt }
       ];
@@ -151,8 +140,7 @@ export class RAGSearch {
         0.1
       );
 
-      console.log('PIPELINE RAG SUCCESSFULLY COMPLETED');
-      console.log('=' .repeat(50));
+      // Pipeline RAG concluído com sucesso
 
       return response.trim();
     } catch (error) {
@@ -200,26 +188,3 @@ export async function searchPrompt(question?: string): Promise<RAGSearch | null>
     return null;
   }
 }
-
-// Test execution
-(async () => {
-  console.log('TEST MODE: Testing the RAG system');
-  
-  const searchSystem = await searchPrompt();
-  if (searchSystem) {
-    const testQueries = [
-      'Qual o faturamento da empresa?',
-      'Quantos funcionários trabalham na empresa?', 
-      'Qual é a capital da França?' // This should return "I have no information.""
-    ];
-    
-    for (const testQuery of testQueries) {
-      console.log(`\nTeste: ${testQuery}`);
-      const result = await searchSystem.generateAnswer(testQuery);
-      console.log(`Resposta: ${result}`);
-      console.log('-'.repeat(80));
-    }
-  } else {
-    console.log('Failure to initialize the RAG system');
-  }
-})();
