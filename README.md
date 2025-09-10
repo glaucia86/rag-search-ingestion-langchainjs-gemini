@@ -321,9 +321,9 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 ## 👨‍💻 Autor
 
-**Twitter** - [@glaucia86](https://twitter.com/glaucia86)
-**LinkedIn** - [Glaucia Lemos](https://www.linkedin.com/in/glaucialemos/)
-**YouTube** - [Glaucia Lemos](https://www.youtube.com/@GlauciaLemos)   
+- **Twitter** - [@glaucia86](https://twitter.com/glaucia86)
+- **LinkedIn** - [Glaucia Lemos](https://www.linkedin.com/in/glaucialemos/)
+- **YouTube** - [Glaucia Lemos](https://www.youtube.com/@GlauciaLemos) 
 
 ---
 
