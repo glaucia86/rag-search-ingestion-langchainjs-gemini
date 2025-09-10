@@ -226,11 +226,9 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('Promise:', promise);
 });
 
-// ENTRY POINT: Run if file called directly
-if (import.meta.url === `file://${process.argv[1]}`) {
-  main().catch((error) => {
-    console.error('\n FATAL ERROR in main application:', error);
-    console.error('Try restarting: npm run start');
-    process.exit(1);
-  });
-}
+// ENTRY POINT: Run the main function
+main().catch((error) => {
+  console.error('\n FATAL ERROR in main application:', error);
+  console.error('Try restarting: npm run start');
+  process.exit(1);
+});
