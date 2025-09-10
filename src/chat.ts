@@ -212,3 +212,25 @@ process.on('SIGINT', () => {
   console.log('RAG Chat closed. See you later!');
   process.exit(0);
 });
+
+// Handler for uncaught errors
+process.on('uncaughtException', (error) => {
+  console.error('\n Uncaught FATAL ERROR:', error);
+  console.error('Restart the application: npm run start');
+  process.exit(1);
+});
+
+// Handler for rejected promises
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('\n Unhandled rejected promise:', reason);
+  console.error('Promise:', promise);
+});
+
+// ENTRY POINT: Run if file called directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch((error) => {
+    console.error('\n FATAL ERROR in main application:', error);
+    console.error('Try restarting: npm run start');
+    process.exit(1);
+  });
+}
