@@ -94,7 +94,6 @@ export class GoogleClient {
   }
 }
 
-
 export class GoogleEmbeddings extends Embeddings {
   private client: GoogleClient;
 
