@@ -42,7 +42,7 @@ export class RAGSearch {
   constructor() {
     // Load environment variables
     this.databaseUrl = process.env.DATABASE_URL || '';
-    this.collectionName = process.env.PG_VECTOR_COLLECTION_NAME || 'pdf.documents';
+    this.collectionName = process.env.PG_VECTOR_COLLECTION_NAME || 'pdf_documents';
 
     // Initialize main components
     this.embeddings = new GoogleEmbeddings();
@@ -201,26 +201,25 @@ export async function searchPrompt(question?: string): Promise<RAGSearch | null>
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
-  (async () => {
-    console.log('TEST MODE: Testing the RAG system');
+// Test execution
+(async () => {
+  console.log('TEST MODE: Testing the RAG system');
+  
+  const searchSystem = await searchPrompt();
+  if (searchSystem) {
+    const testQueries = [
+      'Qual o faturamento da empresa?',
+      'Quantos funcionários trabalham na empresa?', 
+      'Qual é a capital da França?' // This should return "I have no information.""
+    ];
     
-    const searchSystem = await searchPrompt();
-    if (searchSystem) {
-      const testQueries = [
-        'Qual o faturamento da empresa?',
-        'Quantos funcionários trabalham na empresa?', 
-        'Qual é a capital da França?' // This should return "I have no information.""
-      ];
-      
-      for (const testQuery of testQueries) {
-        console.log(`\n🔍 Teste: ${testQuery}`);
-        const result = await searchSystem.generateAnswer(testQuery);
-        console.log(`🤖 Resposta: ${result}`);
-        console.log('-'.repeat(80));
-      }
-    } else {
-      console.log('Failure to initialize the RAG system');
+    for (const testQuery of testQueries) {
+      console.log(`\nTeste: ${testQuery}`);
+      const result = await searchSystem.generateAnswer(testQuery);
+      console.log(`Resposta: ${result}`);
+      console.log('-'.repeat(80));
     }
-  })();
-}
+  } else {
+    console.log('Failure to initialize the RAG system');
+  }
+})();
