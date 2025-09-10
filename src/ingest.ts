@@ -41,29 +41,29 @@ class PDFLoader {
 
   async ingestToVectorStore(): Promise<void> {
     try {
-      console.log('🚀 Starting PDF ingestion process...');
+      console.log('Starting PDF ingestion process...');
       
       // Step 1: Load PDF
-      console.log(`📄 Loading PDF from: ${this.filePath}`);
+      console.log(`Loading PDF from: ${this.filePath}`);
       const rawDocuments = await this.load();
-      console.log(`✅ PDF loaded successfully! Found ${rawDocuments.length} sections`);
+      console.log(`PDF loaded successfully! Found ${rawDocuments.length} sections`);
 
       // Step 2: Split documents into chunks
-      console.log('✂️ Splitting documents into chunks...');
+      console.log('Splitting documents into chunks...');
       const textSplitter = new RecursiveCharacterTextSplitter({
         chunkSize: 1000,
         chunkOverlap: 200,
       });
 
       const splitDocuments = await textSplitter.splitDocuments(rawDocuments);
-      console.log(`✅ Documents split into ${splitDocuments.length} chunks`);
+      console.log(`Documents split into ${splitDocuments.length} chunks`);
 
       // Step 3: Initialize embeddings
-      console.log('🧠 Initializing Google embeddings...');
+      console.log('Initializing Google embeddings...');
       const embeddings = new GoogleEmbeddings();
 
       // Step 4: Initialize vector store
-      console.log('🗄️ Connecting to PostgreSQL vector store...');
+      console.log('Connecting to PostgreSQL vector store...');
       const vectorStore = await PGVectorStore.initialize(embeddings, {
         postgresConnectionOptions: {
           connectionString: process.env.DATABASE_URL,
@@ -78,17 +78,17 @@ class PDFLoader {
       });
 
       // Step 5: Add documents to vector store
-      console.log('💾 Adding documents to vector store...');
+      console.log('Adding documents to vector store...');
       await vectorStore.addDocuments(splitDocuments);
 
-      console.log('🎉 PDF ingestion completed successfully!');
-      console.log(`📊 Total chunks processed: ${splitDocuments.length}`);
+      console.log('PDF ingestion completed successfully!');
+      console.log(`Total chunks processed: ${splitDocuments.length}`);
       
       // Close the connection
       await vectorStore.end();
       
     } catch (error) {
-      console.error('❌ Error during PDF ingestion:', error);
+      console.error('Error during PDF ingestion:', error);
       process.exit(1);
     }
   }
