@@ -241,21 +241,25 @@ rag-search-ingestion-langchainjs-gemini/
 ## ✨ Funcionalidades
 
 ### 🔍 Busca Semântica Inteligente
+
 - Encontra informações relevantes mesmo com sinônimos
 - Busca contextual usando embeddings vetoriais
 - Ranking de relevância automático
 
 ### 🤖 Respostas Naturais
+
 - Respostas em português natural
 - Baseadas exclusivamente no conteúdo do PDF
 - Contexto preservado durante a conversa
 
 ### ⚡ Performance Otimizada
+
 - Cache de embeddings no PostgreSQL
 - Busca vetorial ultrarrápida com pgVector
 - Processamento assíncrono
 
 ### 🛡️ Tratamento de Erros
+
 - Validação de entrada robusta
 - Fallbacks para problemas de API
 - Mensagens de erro amigáveis
@@ -278,6 +282,7 @@ docker-compose up -d
 3. Verifique se não há espaços ou caracteres extras
 
 ### Problema: "No documents found"
+
 ```bash
 # Executar ingestão novamente
 npm run dev:ingest
@@ -287,6 +292,7 @@ docker exec postgres_rag_ts psql -U postgres -d rag -c "SELECT COUNT(*) FROM pdf
 ```
 
 ### Problema: "429 Too Many Requests"
+
 - Aguarde alguns minutos (limite de quota)
 - Verifique seu plano no Google AI Studio
 - Consider usar uma nova API Key se disponível
@@ -316,6 +322,7 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 ## 👨‍💻 Autor
 
 **Glaucia Lemos** - [@glaucia86](https://twitter.com/glaucia86)
+**LinkedIn** - [Glaucia Lemos](https://www.linkedin.com/in/glaucia86/)
 
 ---
 
