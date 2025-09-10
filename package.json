@@ -1,0 +1,49 @@
+{
+  "name": "rag-search-ingestion-langchainjs-gemini",
+  "version": "1.0.0",
+  "description": "A PDF search ingestion RAG application with Docker + LangChain.js + Gemini",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node dist/chat.js",
+    "ingest": "npm run build && node dist/ingest.js",
+    "dev:chat": "tsx src/chat.ts",
+    "dev:ingest": "tsx src/ingest.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/glaucia86/rag-search-ingestion-langchainjs-gemini.git"
+  },
+  "keywords": [
+    "RAG",
+    "LangChain.js",
+    "Gemini",
+    "PDF Search",
+    "Docker"
+  ],
+  "author": "Glaucia Lemos <Twitter: @glaucia86>)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/glaucia86/rag-search-ingestion-langchainjs-gemini/issues"
+  },
+  "homepage": "https://github.com/glaucia86/rag-search-ingestion-langchainjs-gemini#readme",
+  "devDependencies": {
+    "@types/node": "^24.3.1",
+    "@types/pdf-parse": "^1.1.5",
+    "@types/pg": "^8.15.5",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@langchain/community": "^0.3.55",
+    "@langchain/core": "^0.3.75",
+    "@langchain/textsplitters": "^0.1.0",
+    "@types/uuid": "^10.0.0",
+    "dotenv": "^16.6.1",
+    "pdf-parse": "^1.1.1",
+    "pg": "^8.16.3",
+    "uuid": "^13.0.0"
+  }
+}
