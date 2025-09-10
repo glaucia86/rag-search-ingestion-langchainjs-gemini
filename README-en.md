@@ -315,7 +315,9 @@ This project is under the MIT license. See the `LICENSE` file for more details.
 
 ## 👨‍💻 Author
 
-**Glaucia Lemos** - [@glaucia86](https://twitter.com/glaucia86)
+**Twitter** - [@glaucia86](https://twitter.com/glaucia86)
+**LinkedIn** - [Glaucia Lemos](https://www.linkedin.com/in/glaucialemos/)
+**YouTube** - [Glaucia Lemos](https://www.youtube.com/@GlauciaLemos) 
 
 ---
 
