@@ -1,10 +1,9 @@
 import { config } from 'dotenv';
-import { readFileSync } from 'fs';
-import * as PdfParse from 'pdf-parse';
 import { Document } from '@langchain/core/documents';
 import { PGVectorStore } from '@langchain/community/vectorstores/pgvector';
 import { GoogleEmbeddings } from './google-client';
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
+import { PDFLoader as LangChainPDFLoader } from '@langchain/community/document_loaders/fs/pdf';
 
 config();
 
@@ -13,30 +12,20 @@ class PDFLoader {
   constructor(private filePath: string) {}
 
   async load(): Promise<Document[]> {
-    // Read the PDF file
-    const pdfBuffer = readFileSync(this.filePath);
-
-    // Parse PDF content using pdf-parse
-    const pdfData = await PdfParse.default(pdfBuffer);
-
-    const documents: Document[] = [];
-
-    // Divide text into pages
-    const pages = pdfData.text.split('\n\n').filter((page: string) => page.trim().length > 0);
-
-    // Create Document objects with metadata
-    for (let i = 0; i < pages.length; i++) {
-      documents.push(new Document({
-        pageContent: pages[i].trim(),
-        metadata: {
-          page: i + 1,
-          source: this.filePath,
-          totalPages: pages.length
-        }
-      }));
+    try {
+      console.log(`Reading PDF file: ${this.filePath}`);
+      
+      // Use LangChain PDF loader instead of pdf-parse
+      const langChainLoader = new LangChainPDFLoader(this.filePath);
+      const documents = await langChainLoader.load();
+      
+      console.log(`PDF loaded successfully! Found ${documents.length} pages`);
+      
+      return documents;
+    } catch (error) {
+      console.error('Error loading PDF:', error);
+      throw error;
     }
-
-    return documents;
   }
 
   async ingestToVectorStore(): Promise<void> {
