@@ -26,10 +26,6 @@ export class GoogleClient {
 
     // Initialize GoogleGenerativeAI instance
     this.genAI = new GoogleGenerativeAI(this.googleApiKey);
-
-    console.log('Google Gemini configured!');
-    console.log(`Embeddings: ${this.embeddingModel}`);
-    console.log(`Chat Model: ${this.chatModel}`);
   }
 
   async getEmbeddings(texts: string[]): Promise<number[][]> {
