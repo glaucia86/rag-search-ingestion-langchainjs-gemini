@@ -250,7 +250,7 @@ O _pgVector_ adiciona capacidades vetoriais nativas ao PostgreSQL, incluindo tip
 
 O arquivo `docker-compose.yml` define infraestrutura completa para o sistema RAG. O serviço PostgreSQL utiliza imagem **pgvector/pgvector:pg17** que inclui PostgreSQL 17 com extensão pgVector pré-instalada.
 
-<details><summary><b>tsonfig.json</b></summary>
+<details><summary><b>docker-compose.yml</b></summary>
 <br/>
 
 ```yaml
@@ -296,7 +296,7 @@ volumes:
 </details>
 <br/>
 
-O serviço bootstrap_vector_ext garante que a extensão pgVector seja criada automaticamente após PostgreSQL estar operacional. O healthcheck monitora disponibilidade do banco antes de inicializar dependências.
+O serviço `bootstrap_vector_ext` garante que a extensão pgVector seja criada automaticamente após PostgreSQL estar operacional. O healthcheck monitora disponibilidade do banco antes de inicializar dependências.
 
 ## Inicialização e Verificação da Infraestrutura
 
@@ -649,211 +649,6 @@ O processo inicia com conversão da pergunta do usuário em embedding vetorial u
 
 Resultados são classificados por score de similaridade, onde valores menores indicam maior similaridade no espaço coseno. Context assembly concatena chunks mais relevantes, criando contexto rico para geração da resposta.
 
-## Implementação Robusta do Sistema RAG
-
-A implementação combina busca vetorial sofisticada com geração de linguagem natural controlada.
-
-<details><summary><b>src/chat.ts</b></summary>
-<br/>
-
-```typescript
-import { config } from 'dotenv';
-import { getGoogleClient, GoogleEmbeddings, ChatMessage } from './google-client';
-import { PGVectorStore } from '@langchain/community/vectorstores/pgvector';
-
-config();
-
-const PROMPT_TEMPLATE = `
-  CONTEXTO FORNECIDO:
-  {contexto}
-
-  INSTRUÇÕES CRÍTICAS:
-  - Responda EXCLUSIVAMENTE com base no CONTEXTO FORNECIDO acima.
-  - Se a informação não estiver EXPLICITAMENTE no contexto, responda exatamente:
-    "Não tenho informações necessárias para responder sua pergunta."
-  - NUNCA use conhecimento externo ou invente informações.
-  - NUNCA expresse opiniões pessoais ou interpretações além do texto fornecido.
-
-  EXEMPLOS DE RESPOSTAS CORRETAS PARA PERGUNTAS SEM CONTEXTO:
-  - "Qual é a capital da França?" -> "Nao tenho informações necessárias para responder sua pergunta."
-  - "Quantos funcionários a empresa tem?" -> "Não tenho informações necessárias para responder sua pergunta."
-  - "Você recomenda investir nisso?" -> "Não tenho informações necessárias para responder sua pergunta."
-
-  PERGUNTA DO USUÁRIO:
-  {pergunta}
-
-  RESPOSTA (baseada apenas no contexto fornecido):
-`;
-
-export interface SearchResult {
-  content: string;
-  metadata: any;
-  score: number;
-}
-
-export class RAGSearch {
-  private databaseUrl: string;
-  private collectionName: string;
-  private embeddings: GoogleEmbeddings;
-  private googleClient: any;
-  private vectorStore: PGVectorStore | null = null;
-
-  constructor() {
-    // Load environment variables
-    this.databaseUrl = process.env.DATABASE_URL || '';
-    this.collectionName = process.env.PG_VECTOR_COLLECTION_NAME || 'pdf_documents';
-
-    // Initialize main components
-    this.embeddings = new GoogleEmbeddings();
-    this.googleClient = getGoogleClient();
-    this.vectorStore = null;
-
-    this._initializeVectorStore();
-  }
-
-  private async _initializeVectorStore(): Promise<void> {
-    try {
-      // Connect to PostgreSQL vector store
-      this.vectorStore = await PGVectorStore.initialize(this.embeddings, {
-        postgresConnectionOptions: {
-          connectionString: this.databaseUrl,
-        },
-        tableName: this.collectionName,
-        columns: {
-          idColumnName: 'id',
-          vectorColumnName: 'vector',
-          contentColumnName: 'content',
-          metadataColumnName: 'metadata',
-        },
-      });
-
-      console.log('RAG System: Connection to vector database established ')
-    } catch (error) {
-      console.log(`Error initializing vector database: ${error}`);
-      throw error;
-    }
-  }
-
-  async searchDocuments(query: string, k: number = 10): Promise<SearchResult[]> {
-    if (!this.vectorStore) {
-      throw new Error('Vector bank has not been initialized. Run ingestion first.');   
-    }
-
-    try {
-      // Busca semântica silenciosa
-
-      // PHASE 1: SIMILARITY SEARCH WITH SCORES
-      // Use similaritySearchWithScore to get both documents and scores
-      const results = await this.vectorStore.similaritySearchWithScore(query, k);
-
-      // PHASE 2: FORMAT RESULTS
-      const formattedResults: SearchResult[] = [];
-
-      for(const [document, score] of results) {
-        formattedResults.push({
-          content: document.pageContent, // Chunk text
-          metadata: document.metadata, // Info about page, source, etc.
-          score: score // Similarity score (lower is more similar)
-        });
-      }
-
-      // ${formattedResults.length} chunks encontrados silenciosamente
-
-      return formattedResults;
-    } catch (error) {
-      console.log(`Error during semantic search: ${error}`);
-      return []; // return empty array on error
-    }
-  }
-
-  async generateAnswer(query: string): Promise<string> {
-    try {
-      // Pipeline RAG iniciado silenciosamente
-
-      // STEP 1: RETRIEVAL
-      const documents = await this.searchDocuments(query, 10);
-
-      if (!documents.length) {
-        console.log('No relevant documents found in the database.');
-        return 'I don\'t have the information necessary to answer your question.';
-      }
-
-      // STEP 2: CONTEXT ASSEMBLY
-      const context = documents.map((doc, index) => {
-        return doc.content;
-      })
-      .join('\n\n');
-
-      // STEP 3: Estruturando prompts para o LLM
-      const fullPrompt = PROMPT_TEMPLATE
-        .replace('{contexto}', context)
-        .replace('{pergunta}', query);
-
-      // STEP 4: GENERATION USING LLM
-      const messages: ChatMessage[] = [
-        { role: 'user', content: fullPrompt }
-      ];
-
-      const response = await this.googleClient.chatCompletions(
-        messages,
-        0.1
-      );
-
-      // Pipeline RAG concluído com sucesso
-
-      return response.trim();
-    } catch (error) {
-      console.log(`Error in RAG pipeline: ${error}`);
-      return 'Internal error: Unable to process your query. Please check if ingestion has been performed.';
-    }
-  }
-
-  // Utility method for checking system status
-  async getSystemStatus(): Promise<{ isReady: boolean; chunksCount: number}> {
-    try {
-      if (!this.vectorStore) {
-        return { isReady: false, chunksCount: 0 };
-      }
-
-      const testResults = await this.vectorStore.similaritySearch("test", 1);
-      return {
-        isReady: true,
-        chunksCount: testResults.length > 0 ? -1 : 0 // -1 means "there are documents, but we don't know how many
-      }
-    } catch (error) {
-      return { isReady: false, chunksCount: 0 };
-    }
-  }
-}
-
-// Factory function to create RAG instance
-export async function searchPrompt(question?: string): Promise<RAGSearch | null> {
-  try {
-    console.log('Initializing RAG Search system...');
-    const ragSearch = new RAGSearch();
-
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    const status = await ragSearch.getSystemStatus();
-    if (!status.isReady) {
-      console.log('System is not ready. Run ingestion first.');
-      return null;
-    }
-
-    console.log('RAG system initialized and ready for use.');
-    return ragSearch;
-  } catch (error) {
-    console.log(`Error initializing RAG Search system: ${error}`);
-    return null;
-  }
-}
-```
-
-</details>
-<br/>
-
-A classe `RAGSearch` encapsula funcionalidade completa de busca e geração. `searchDocuments` executa busca vetorial e retorna resultados formatados com scores. `generateAnswer` orquestra pipeline completo de RAG.
-
 ## Prompt Engineering Anti-Alucinação
 
 O template de prompt implementa estratégias sofisticadas para _prevenir alucinações_ e garantir factualidade das respostas. Instruções explícitas enfatizam uso exclusivo do contexto fornecido. Fallback response fornece resposta padrão para casos onde informação não está disponível. Temperature baixa de 0.1 reduz criatividade e aumenta determinismo. Exemplos negativos demonstram casos onde resposta correta é "não sei".
@@ -1113,6 +908,8 @@ main().catch((error) => {
 </details>
 <br/>
 
+A classe `RAGSearch` encapsula funcionalidade completa de busca e geração. `searchDocuments` executa busca vetorial e retorna resultados formatados com scores. `generateAnswer` orquestra pipeline completo de RAG.
+
 A função `printBanner` apresenta informações essenciais sobre sistema e comandos disponíveis. `checkStatus` oferece diagnóstico detalhado de componentes, facilitando troubleshooting. O loop principal processa comandos e perguntas com tratamento robusto de erros.
 
 ## Execução e Validação Comprehensive
@@ -1183,24 +980,24 @@ O roadmap técnico identifica oportunidades de evolução. Migração da CLI par
 
 O código completo deste sistema RAG está disponível no repositório oficial **[rag-search-ingestion-langchainjs-gemini](https://github.com/glaucia86/rag-search-ingestion-langchainjs-gemini)**, onde você encontrará implementação funcional, instruções detalhadas de instalação, exemplos de uso, e documentação completa de todos os componentes desenvolvidos. O repositório inclui arquivos de configuração Docker prontos para produção, scripts de automação para desenvolvimento, e casos de teste específicos que demonstram a aplicação prática dos conceitos apresentados neste artigo.
 
-## Fundamentos Teóricos de RAG
+### Fundamentos Teóricos de RAG
 
 Para compreensão aprofundada dos fundamentos teóricos, o paper original "**[Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks" por Lewis et al](https://dl.acm.org/doi/abs/10.5555/3495724.3496517)**. na conferência NeurIPS 2020 estabelece os princípios fundamentais da arquitetura RAG. A pesquisa "**[Dense Passage Retrieval for Open-Domain Question Answering" por Karpukhin et al](https://arxiv.org/abs/2004.04906)**. explora técnicas avançadas de recuperação densa que fundamentam sistemas de busca semântica modernos. O trabalho "**[In-Context Retrieval-Augmented Language Models](https://arxiv.org/abs/2302.00083)**" apresenta evoluções recentes na integração de contexto dinânico em modelos de linguagem.
 
-## Tecnologias e Frameworks
+### Tecnologias e Frameworks
 
 A documentação oficial do LangChain.js em **[https://js.langchain.com/](https://js.langchain.com/)** oferece guias completos sobre implementação de pipelines de IA, incluindo tutoriais específicos sobre integração com diferentes provedores de embeddings e modelos de linguagem. O Google AI Developer Documentation em **[https://ai.google.dev/docs](https://ai.google.dev/docs)** fornece especificações técnicas detalhadas sobre APIs Gemini, incluindo rate limits, melhores práticas de prompt engineering, e otimizações de performance.
 Para PostgreSQL e pgVector, a documentação oficial em **[https://github.com/pgvector/pgvector](https://github.com/pgvector/pgvector)** contém especificações técnicas sobre implementação de índices HNSW, configurações de performance, e estratégias de escalonamento para grandes volumes de dados vetoriais. O PostgreSQL Documentation em **[https://www.postgresql.org/docs/](https://www.postgresql.org/docs/)** oferece fundamentos sobre administração de banco de dados, otimização de queries, e configurações avançadas para aplicações de alta performance.
 
-## Embedding Models e Busca Vetorial
+### Embedding Models e Busca Vetorial
 
 A compreensão profunda de embeddings pode ser expandida através da pesquisa "**[Attention Is All You Need](https://arxiv.org/abs/1706.03762)**" que introduz arquitetura Transformer fundamental para modelos de embedding modernos. O paper "**[Efficient Estimation of Word Representations in Vector Space" por Mikolov et al](https://arxiv.org/abs/1301.3781)**. estabelece fundamentos matemáticos de representações vetoriais semânticas. Para algoritmos de busca vetorial, "**[Efficient and robust approximate nearest neighbor search using Hierarchical Navigable Small World graphs](https://arxiv.org/abs/1603.09320)**" detalha implementação e otimizações do algoritmo HNSW utilizado pelo pgVector.
 
-## Prompt Engineering e Controle de Alucinações
+### Prompt Engineering e Controle de Alucinações
 
 A pesquisa "**[Constitutional AI: Harmlessness from AI Feedback](https://arxiv.org/abs/2212.08073)**" explora técnicas avançadas para controle de comportamento em modelos de linguagem. "**[Chain-of-Thought Prompting Elicits Reasoning in Large Language Models](https://arxiv.org/abs/2201.11903)**" demonstra estratégias de estruturação de prompts para raciocínio complexo. "**[Instruction Following with Large Language Models](https://arxiv.org/abs/2506.13734)**" oferece insights sobre design de instruções eficazes para sistemas RAG.
 
-## Recursos Práticos e Tutoriais
+### Recursos Práticos e Tutoriais
 
 LangChain Cookbook em **[https://github.com/langchain-ai/langchain/tree/master/cookbook](https://github.com/langchain-ai/langchain/tree/master/cookbook)** contém exemplos práticos de implementação de diferentes padrões RAG. Pinecone Learning Center em **[https://www.pinecone.io/learn/](https://www.pinecone.io/learn/)** oferece tutoriais sobre bancos de dados vetoriais e aplicações de busca semântica. Weaviate Documentation em **[https://weaviate.io/developers/weaviate/](https://weaviate.io/developers/weaviate/)** apresenta alternativas para armazenamento vetorial e suas especificidades técnicas.
 
