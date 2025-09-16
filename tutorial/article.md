@@ -500,7 +500,11 @@ O chunking representa um dos aspectos mais críticos em sistemas RAG, determinan
 
 A estratégia de chunking deve balançar tamanho de contexto com especificidade de informação. Chunks muito grandes podem conter informações irrelevantes que diluem a relevância. Chunks muito pequenos podem carecer de contexto suficiente para compreensão completa.
 
-O `RecursiveCharacterTextSplitter` (do LangChain.js) implementa abordagem hierárquica que preserva estrutura natural do documento. Parâmetros críticos incluem **chunk_size de 1000 caracteres** que oferece balance ideal entre contexto e especificidade, **chunk_overlap de 200 caracteres** que preserva contexto nas bordas dos chunks, e **separators** que priorizam quebras naturais.
+O `RecursiveCharacterTextSplitter` (do LangChain.js) é muito útil em documentos textuais, já que preserva a estrutura natural de parágrafos e frases. Nesse caso, parâmetros como `chunk_size` em torno de 1.000 caracteres e `chunk_overlap` de 150–200 funcionam como um bom ponto de partida, mantendo equilíbrio entre contexto e especificidade.
+
+No entanto, como este projeto trabalha com _PDF tabular_, essa estratégia não é a mais eficaz. Para tabelas, preferimos quebrar o documento linha a linha, garantindo que cada registro seja um chunk independente. Além disso, incluímos o cabeçalho da tabela em cada fragmento para manter clareza semântica. Dessa forma, o overlap é desnecessário (mantido em 0) e os separadores são adaptados para priorizar quebras de linha.
+
+Essa abordagem garante que cada entrada tabular seja preservada integralmente e melhora a precisão na hora de recuperar informações via RAG.
 
 ## Algoritmo `RecursiveCharacterTextSplitter` detalhado
 
@@ -552,8 +556,8 @@ class PDFLoader {
 
       console.log('Splitting documents into chunks...');
       const textSplitter = new RecursiveCharacterTextSplitter({
-        chunkSize: 1000,
-        chunkOverlap: 200,
+        chunkSize: 400,
+        chunkOverlap: 0,
       });
 
       const splitDocuments = await textSplitter.splitDocuments(rawDocuments);

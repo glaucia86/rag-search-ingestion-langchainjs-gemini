@@ -40,8 +40,9 @@ class PDFLoader {
       // Step 2: Split documents into chunks
       console.log('Splitting documents into chunks...');
       const textSplitter = new RecursiveCharacterTextSplitter({
-        chunkSize: 1000,
-        chunkOverlap: 200,
+        chunkSize: 400,
+        chunkOverlap: 0,
+        separators: ["\n\n", "\n", " ", ""],
       });
 
       const splitDocuments = await textSplitter.splitDocuments(rawDocuments);
