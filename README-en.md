@@ -27,12 +27,12 @@ A complete **Retrieval-Augmented Generation (RAG)** application for intelligent 
 
 ## 🎯 Overview
 
-This project implements a complete RAG system that allows asking questions in natural language about PDF document content. The system processes documents, creates vector embeddings, stores them in a PostgreSQL database with pgVector, and answers questions using Google Gemini.
+This project implements a complete RAG system that allows natural language questions about PDF document content. The system processes documents, creates vector embeddings, stores them in a PostgreSQL database with pgVector, and answers questions using Google Gemini.
 
 ### How It Works
 
 1. **Ingestion**: The system loads and processes PDF documents, splitting them into chunks
-2. **Vectorization**: Each chunk is converted to embeddings using Google Gemini
+2. **Vectorization**: Each chunk is converted into embeddings using Google Gemini
 3. **Storage**: Embeddings are stored in PostgreSQL with pgVector extension
 4. **Search**: When you ask a question, the system finds the most relevant chunks
 5. **Generation**: Google Gemini generates an answer based on the found context
@@ -73,8 +73,9 @@ This project implements a complete RAG system that allows asking questions in na
 │  User Question  │    │   Similarity     │    │   PostgreSQL    │
 │                 │───▶│   Search         │◀───│   + pgVector    │
 │  "Which company │    │                  │    │                 │
-│   has highest   │    └──────────────────┘    └─────────────────┘
-│   revenue?"     │            │
+│   has the       │    └──────────────────┘    └─────────────────┘
+│   highest       │            │
+│   revenue?"     │            ▼
 └─────────────────┘            ▼
         ▲              ┌──────────────────┐
         │              │   Context        │
@@ -117,23 +118,17 @@ npm install
 Create a `.env` file in the project root:
 
 ```env
-# Google AI API Configuration
-GOOGLE_API_KEY=your_api_key_here
-
-# Database Configuration
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=rag
-DB_USER=postgres
-DB_PASSWORD=postgres
-
-# Vector Database Configuration
-VECTOR_DIMENSION=768
+GOOGLE_API_KEY=your_google_api_key_here
+GOOGLE_EMBEDDING_MODEL=models/embedding-001
+GOOGLE_CHAT_MODEL=gemini-2.0-flash
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/rag
+PG_VECTOR_COLLECTION_NAME=pdf_documents
+PDF_PATH=./document.pdf
 ```
 
 ### 4. Get your Google API Key
 
-1. Go to [Google AI Studio](https://aistudio.google.com/)
+1. Visit [Google AI Studio](https://aistudio.google.com/)
 2. Create a new API Key
 3. Copy and paste it into the `.env` file
 
@@ -227,16 +222,16 @@ rag-search-ingestion-langchainjs-gemini/
 ├── document.pdf            # Sample document
 ├── package.json            # Dependencies and scripts
 ├── tsconfig.json           # TypeScript configuration
-├── .env                    # Environment variables (create this)
+├── .env                    # Environment variables (create)
 └── README.md              # This documentation
 ```
 
 ### File Descriptions
 
-- **`chat.ts`** - Main user interface with readline
+- **`chat.ts`** - Interactive chat interface with readline
 - **`search.ts`** - Implements complete RAG pipeline (4 stages)
-- **`ingest.ts`** - Processes PDFs and creates vector embeddings
-- **`google-client.ts`** - Google Gemini API integration
+- **`ingest.ts`** - PDF processing and ingestion
+- **`google-client.ts`** - Google Gemini API client
 
 ## ✨ Features
 
@@ -246,7 +241,7 @@ rag-search-ingestion-langchainjs-gemini/
 - Automatic relevance ranking
 
 ### 🤖 Natural Responses
-- Natural language responses in English
+- Responses in natural language
 - Based exclusively on PDF content
 - Context preserved during conversation
 
@@ -257,7 +252,7 @@ rag-search-ingestion-langchainjs-gemini/
 
 ### 🛡️ Error Handling
 - Robust input validation
-- API problem fallbacks
+- Fallbacks for API issues
 - User-friendly error messages
 
 ## 🔧 Troubleshooting
@@ -275,7 +270,7 @@ docker-compose up -d
 ### Problem: "Google API Key invalid"
 1. Check if the API Key is correct in `.env`
 2. Confirm the API is active in Google AI Studio
-3. Check for no extra spaces or characters
+3. Check for extra spaces or characters
 
 ### Problem: "No documents found"
 ```bash
