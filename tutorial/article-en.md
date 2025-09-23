@@ -1,6 +1,6 @@
 # Complete RAG System: Zero to Hero with TypeScript, Docker, Google Gemini and LangChain.js
 
-![alt text](./resource/image-01.png)
+![alt text](./resource/rag-docker-ts-langchain.jpg)
 
 The implementation of Retrieval-Augmented Generation (RAG) systems represents one of the most promising approaches to solve the fundamental limitations of modern Large Language Models. This article presents a complete journey in building a robust and scalable RAG system, using **[TypeScript](https://www.typescriptlang.org/)** as the development foundation, **[Docker](https://www.docker.com/)** for infrastructure orchestration, **[Google Gemini](https://ai.google.dev/gemini-api/docs/quickstart?hl=pt-br)** for artificial intelligence, and **[LangChain.js](https://js.langchain.com/docs/introduction/)** as the integration framework.
 
