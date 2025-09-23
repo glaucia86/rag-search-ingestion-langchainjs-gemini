@@ -24,6 +24,7 @@ A complete **Retrieval-Augmented Generation (RAG)** application for intelligent 
 - [Project Structure](#-project-structure)
 - [Features](#-features)
 - [Troubleshooting](#-troubleshooting)
+- [Complete Tutorial](#-complete-tutorial)
 
 ## 🎯 Overview
 
@@ -294,6 +295,10 @@ npm run start          # Runs compiled version
 npm run dev:chat       # Interactive chat (development)
 npm run dev:ingest     # PDF ingestion (development)
 ```
+
+## 📚 Complete Tutorial
+
+A detailed tutorial is available in the [tutorial/article-en.md](./tutorial/article-en.md) file. It covers everything from initial setup to complete execution of the RAG system, with step-by-step explanations and screenshots.
 
 ## 🤝 Contributing
 

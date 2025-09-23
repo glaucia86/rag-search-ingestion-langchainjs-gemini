@@ -24,6 +24,7 @@ Uma aplicação completa de **Retrieval-Augmented Generation (RAG)** para busca 
 - [Estrutura do Projeto](#-estrutura-do-projeto)
 - [Funcionalidades](#-funcionalidades)
 - [Troubleshooting](#-troubleshooting)
+- [Tutorial Completo](#-tutorial-completo)
 
 ## 🎯 Visão Geral
 
@@ -305,6 +306,10 @@ npm run start          # Executa versão compilada
 npm run dev:chat       # Chat interativo (desenvolvimento)
 npm run dev:ingest     # Ingestão de PDF (desenvolvimento)
 ```
+
+## 📚 Tutorial Completo
+
+Um tutorial detalhado está disponível no arquivo [tutorial/article.md](./tutorial/article.md). Ele cobre desde a configuração inicial até a execução completa do sistema RAG, com explicações passo a passo e capturas de tela.
 
 ## 🤝 Contribuição
 
