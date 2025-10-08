@@ -8,6 +8,7 @@
 ![pgVector](https://img.shields.io/badge/pgVector-Extension-336791?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+![Copilot Powered](https://img.shields.io/badge/Copilot-Powered%20by-blue?logo=github)
 
 Uma aplicação completa de **Retrieval-Augmented Generation (RAG)** para busca inteligente em documentos PDF, construída com TypeScript, Node.js e tecnologias modernas de IA.
 
