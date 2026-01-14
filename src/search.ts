@@ -1,5 +1,5 @@
 import { config } from 'dotenv';
-import { getGoogleClient, GoogleEmbeddings, ChatMessage } from './google-client';
+import { getGoogleClient, GoogleEmbeddings, ChatMessage } from './google-client.js';
 import { PGVectorStore } from '@langchain/community/vectorstores/pgvector';
 import type { VectorStoreRetriever } from '@langchain/core/vectorstores';
 
