@@ -167,7 +167,16 @@ export class RAGSearch {
         isReady: true,
         chunksCount: testResults.length > 0 ? -1 : 0 // -1 means "there are documents, but we don't know how many
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      // Log the error for debugging
+      const errorStr = String(error);
+      console.log(`Status check error: ${errorStr.substring(0, 200)}`);
+      
+      // If rate limit error (429), assume system is ready but API is throttled
+      if (errorStr.includes('429') || errorStr.includes('Too Many Requests') || errorStr.includes('quota')) {
+        console.log('Warning: API rate limit hit during status check. Assuming system is ready.');
+        return { isReady: true, chunksCount: -1 };
+      }
       return { isReady: false, chunksCount: 0 };
     }
   }
