@@ -264,7 +264,7 @@ services:
       POSTGRES_PASSWORD: postgres  
       POSTGRES_DB: rag
     ports:
-      - "5432:5432"
+      - "5432:5433"
     volumes:
       # Data persistence
       - postgres_data:/var/lib/postgresql/data
