@@ -6,7 +6,7 @@ A implementação de sistemas de Retrieval-Augmented Generation (RAG) representa
 
 Nossa solução permite que usuários façam perguntas em linguagem natural sobre documentos PDF, combinando busca semântica avançada com geração de respostas contextuais precisas. O sistema demonstra como integrar tecnologias de ponta para criar aplicações de IA práticas e escaláveis, abordando desde a extração e processamento de documentos até a geração de respostas contextualmente relevantes.
 
-As tecnologias principais que formam o backbone desta implementação incluem Node.js versão 22 ou superior para runtime JavaScript moderno, TypeScript 5.9 ou superior para tipagem estática robusta, LangChain.js 0.3 ou superior como framework de orquestração de IA, Google Gemini API para embeddings e geração de texto, PostgreSQL 15 ou superior com a extensão pgVector para armazenamento e busca vetorial, e Docker para containerização e implantação simplificada.
+As tecnologias principais que formam o backbone desta implementação incluem Node.js versão 22 ou superior para runtime JavaScript moderno, TypeScript 5.9 ou superior para tipagem estática robusta, LangChain.js v1 (`@langchain/core` ^1.1.13, `langchain` ^1.2.8) como framework de orquestração de IA, Google Gemini API para embeddings e geração de texto, PostgreSQL 15 ou superior com a extensão pgVector para armazenamento e busca vetorial, e Docker para containerização e implantação simplificada.
 
 > observação: como muitos já sabem, estou fazendo o **[MBA em Engenheria de Software em A.I na FullCycle](https://ia.fullcycle.com.br/mba-ia/?utm_source=google_search&utm_campaign=search_mba-arquitetura&utm_medium=curso_especifico&utm_content=search_mba-arquitetura&gad_source=1&gad_campaignid=21917349974&gclid=Cj0KCQjww4TGBhCKARIsAFLXndQejvz0K1XTOHQ3CSglzOlQfVH64T2CS1qZnwkiyChx0HoXzaK4KY0aAosOEALw_wcB)**, e este artigo é baseado em um dos projetos práticos do curso. Não estou fazendo jabá, apenas compartilhando o conhecimento aprendido e para que outros possam se beneficiar também. Mas, caso queira saber mais sobre o MBA, clique no link anterior.
 
@@ -69,9 +69,9 @@ Para processamento de documentos, usamos as seguintes bibliotecas:
 
 - **[RecursiveCharacterTextSplitter](https://js.langchain.com/docs/concepts/text_splitters/):** implementa algoritmo inteligente de chunking que preserva contexto semântico. 
 
-- **[PDF-Parse](https://www.npmjs.com/package/pdf-parse):** realiza extração limpa de texto de documentos PDF. 
+- **[@langchain/community PDFLoader](https://js.langchain.com/docs/integrations/document_loaders/file_loaders/pdf/):** realiza extração limpa de texto de documentos PDF através do LangChain. 
 
-Os embeddings e IA são gerenciados através da Google Gemini API, utilizando o modelo embedding-001 para geração de embeddings de 768 dimensões e **[gemini-2.0-flash](https://cloud.google.com/vertex-ai/generative-ai/docs/models/gemini/2-0-flash?hl=pt-br)** para geração de respostas otimizadas.
+Os embeddings e IA são gerenciados através da Google Gemini API, utilizando o modelo **gemini-embedding-001** para geração de embeddings de 3072 dimensões e **gemma-3-4b-it** para geração de respostas otimizadas.
 
 O banco de dados vetorial combina _PostgreSQL 15_ ou superior como banco relacional robusto com _pgVector_ como extensão para busca vetorial eficiente. _HNSW Indexing_ implementa algoritmo de busca aproximada que oferece performance para buscas em milissegundos mesmo em grandes volumes de dados.
 
@@ -162,10 +162,10 @@ Este comando cria o arquivo `package.json` com configurações padrão.
 As dependências de produção incluem pacotes essenciais para funcionalidade do sistema:
 
 ```bash
-npm install @google/generative-ai @langchain/core @langchain/community @langchain/textsplitters dotenv pg uuid
+npm install @google/generative-ai @langchain/core @langchain/community @langchain/textsplitters langchain dotenv pg uuid
 ```
 
-Estas bibliotecas fornecem integração com Google AI, framework LangChain, manipulação de variáveis de ambiente, conexão PostgreSQL e geração de identificadores únicos.
+Estas bibliotecas fornecem integração com Google AI, framework LangChain v1 (incluindo o pacote `langchain` obrigatório na v1), manipulação de variáveis de ambiente, conexão PostgreSQL e geração de identificadores únicos.
 
 As dependências de desenvolvimento garantem experiência de desenvolvimento robusta:
 
@@ -240,7 +240,7 @@ Os scripts no `package.json` automatizam tarefas comuns:
 
 ### Fundamentos Teóricos dos Bancos Vetoriais
 
-Embeddings matemáticos representam uma revolução na forma como computadores processam e compreendem linguagem natural. Textos são convertidos em vetores de alta dimensionalidade, onde cada dimensão captura aspectos específicos do significado semântico. Para o modelo _Gemini embedding-001_, cada texto é representado por 768 números de ponto flutuante.
+Embeddings matemáticos representam uma revolução na forma como computadores processam e compreendem linguagem natural. Textos são convertidos em vetores de alta dimensionalidade, onde cada dimensão captura aspectos específicos do significado semântico. Para o modelo _Gemini gemini-embedding-001_, cada texto é representado por 3072 números de ponto flutuante.
 
 A proximidade no espaço vetorial representa similaridade semântica, permitindo que algoritmos matemáticos encontrem textos relacionados através de cálculos de distância. Por exemplo, as frases _"empresa faturamento"_ e _"receita corporativa"_ produziriam vetores próximos no espaço multidimensional.
 
@@ -264,7 +264,7 @@ services:
       POSTGRES_PASSWORD: postgres  
       POSTGRES_DB: rag
     ports:
-      - "5432:5432"
+      - "5432:5433"
     volumes:
       # Data persistence
       - postgres_data:/var/lib/postgresql/data
@@ -326,7 +326,7 @@ Este comando permite identificar problemas de inicialização.
 
 Embeddings representam uma das inovações mais significativas em processamento de linguagem natural, convertendo representações discretas de texto em vetores contínuos de números reais. Estes vetores capturam relações semânticas complexas, permitindo operações matemáticas sobre conceitos linguísticos.
 
-A dimensionalidade de 768 números para o modelo embedding-001 oferece espaço suficiente para representar nuances semânticas sutis enquanto mantém eficiência computacional. Vetores próximos no espaço multidimensional correspondem a textos semanticamente similares, permitindo busca por similaridade matemática.
+A dimensionalidade de 3072 números para o modelo gemini-embedding-001 oferece espaço suficiente para representar nuances semânticas sutis enquanto mantém eficiência computacional. Vetores próximos no espaço multidimensional correspondem a textos semanticamente similares, permitindo busca por similaridade matemática.
 
 Operações vetoriais permitem manipulação conceitual, onde diferenças e somas de vetores podem revelar relações analógicas. O exemplo clássico _"rei" - "homem" + "mulher" ≈ "rainha"_ demonstra como embeddings capturam estruturas relacionais abstratas.
 
@@ -353,17 +353,20 @@ export class GoogleClient {
   private googleApiKey: string;
   private embeddingModel: string;
   private chatModel: string;
+  private embeddingDims: number;
   private genAI: GoogleGenerativeAI;
 
   constructor() {
     this.googleApiKey = process.env.GOOGLE_API_KEY || '';
-    this.embeddingModel = process.env.GOOGLE_EMBEDDING_MODEL || '';
-    this.chatModel = process.env.GOOGLE_CHAT_MODEL || '';
+    this.embeddingModel = process.env.GOOGLE_EMBEDDING_MODEL || 'models/gemini-embedding-001';
+    this.chatModel = process.env.GOOGLE_CHAT_MODEL || 'models/gemma-3-4b-it';
+    this.embeddingDims = Number(process.env.GOOGLE_EMBEDDING_DIMS || '3072');
 
     if (!this.googleApiKey) {
       throw new Error('Google API key is not set in environment variables.');
     }
 
+    // Initialize GoogleGenerativeAI instance
     this.genAI = new GoogleGenerativeAI(this.googleApiKey);
   }
 
@@ -372,20 +375,17 @@ export class GoogleClient {
 
     for(const text of texts) {
       try {
-        const model = this.genAI.getGenerativeModel({ model: 'embedding-001' });
+        const model = this.genAI.getGenerativeModel({ model: this.embeddingModel});
         const result = await model.embedContent(text);
         
-        if (result.embedding && result.embedding.values) {
-          embeddings.push(result.embedding.values);
+        if (result.embedding?.values) {
+            embeddings.push(result.embedding.values);
         } else {
-          console.log(`No embedding returned for text: ${text}`);
-          const dummySize = 768;
-          embeddings.push(new Array(dummySize).fill(0));
+          embeddings.push(new Array(this.embeddingDims).fill(0));
         }
       } catch (error) {
-        console.log(`Error generating embedding: ${error}`);
-        const dummySize = 768;
-        embeddings.push(new Array(dummySize).fill(0));
+        console.log(`Error generating embedding for text: ${text}`, error);
+        embeddings.push(new Array(this.embeddingDims).fill(0));
       }
     }
 
@@ -483,8 +483,9 @@ O arquivo `.env` centraliza configuração sensível, separando credenciais do c
 
 ```text
 GOOGLE_API_KEY=sua_google_api_key_aqui
-GOOGLE_EMBEDDING_MODEL=models/embedding-001
-GOOGLE_CHAT_MODEL=gemini-2.0-flash
+GOOGLE_EMBEDDING_MODEL=models/gemini-embedding-001
+GOOGLE_EMBEDDING_DIMS=3072
+GOOGLE_CHAT_MODEL=models/gemma-3-4b-it
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/rag
 PG_VECTOR_COLLECTION_NAME=pdf_documents
 PDF_PATH=./document.pdf
@@ -523,23 +524,26 @@ A implementação da ingestão combina extração de PDF, segmentação intelige
 import { config } from 'dotenv';
 import { Document } from '@langchain/core/documents';
 import { PGVectorStore } from '@langchain/community/vectorstores/pgvector';
-import { GoogleEmbeddings } from './google-client';
+import { GoogleEmbeddings } from './google-client.js';
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 import { PDFLoader as LangChainPDFLoader } from '@langchain/community/document_loaders/fs/pdf';
 
 config();
 
 class PDFLoader {
+
   constructor(private filePath: string) {}
 
   async load(): Promise<Document[]> {
     try {
       console.log(`Reading PDF file: ${this.filePath}`);
       
+      // Use LangChain PDF loader instead of pdf-parse
       const langChainLoader = new LangChainPDFLoader(this.filePath);
       const documents = await langChainLoader.load();
       
       console.log(`PDF loaded successfully! Found ${documents.length} pages`);
+      
       return documents;
     } catch (error) {
       console.error('Error loading PDF:', error);
@@ -551,21 +555,27 @@ class PDFLoader {
     try {
       console.log('Starting PDF ingestion process...');
       
+      // Step 1: Load PDF
+      console.log(`Loading PDF from: ${this.filePath}`);
       const rawDocuments = await this.load();
-      console.log(`PDF loaded: ${rawDocuments.length} sections`);
+      console.log(`PDF loaded successfully! Found ${rawDocuments.length} sections`);
 
+      // Step 2: Split documents into chunks
       console.log('Splitting documents into chunks...');
       const textSplitter = new RecursiveCharacterTextSplitter({
         chunkSize: 400,
         chunkOverlap: 0,
+        separators: ["\n\n", "\n", " ", ""],
       });
 
       const splitDocuments = await textSplitter.splitDocuments(rawDocuments);
       console.log(`Documents split into ${splitDocuments.length} chunks`);
 
+      // Step 3: Initialize embeddings
       console.log('Initializing Google embeddings...');
       const embeddings = new GoogleEmbeddings();
 
+      // Step 4: Initialize vector store
       console.log('Connecting to PostgreSQL vector store...');
       const vectorStore = await PGVectorStore.initialize(embeddings, {
         postgresConnectionOptions: {
@@ -580,12 +590,14 @@ class PDFLoader {
         },
       });
 
+      // Step 5: Add documents to vector store
       console.log('Adding documents to vector store...');
       await vectorStore.addDocuments(splitDocuments);
 
       console.log('PDF ingestion completed successfully!');
       console.log(`Total chunks processed: ${splitDocuments.length}`);
       
+      // Close the connection
       await vectorStore.end();
       
     } catch (error) {
@@ -617,14 +629,14 @@ O `PGVectorStore` cria automaticamente schema otimizado para armazenamento e bus
 
 - **id -** Chave primária UUID para identificação única
 - **content -** Texto original do chunk extraído do PDF
-- **vector -** Embeddings de 768 dimensões gerados pelo Gemini
+- **vector -** Embeddings de 3072 dimensões gerados pelo Gemini
 - **metadata -** Informações estruturais como página, fonte e contexto
 
 ```sql
 CREATE TABLE pdf_documents (
   id UUID PRIMARY KEY,
   content TEXT,
-  vector VECTOR(768),
+  vector VECTOR(3072),
   metadata JSONB
 );
 
@@ -674,7 +686,7 @@ A implementação combina readline nativo do Node.js com lógica de comando avan
 
 ```typescript
 import { createInterface } from "readline";
-import { searchPrompt, RAGSearch } from "./search";
+import { searchPrompt, RAGSearch } from "./search.js";
 
 // Function to print initial banner with system informations
 function printBanner(): void {

@@ -13,12 +13,14 @@ export class GoogleClient {
   private googleApiKey: string;
   private embeddingModel: string;
   private chatModel: string;
+  private embeddingDims: number;
   private genAI: GoogleGenerativeAI;
 
   constructor() {
     this.googleApiKey = process.env.GOOGLE_API_KEY || '';
-    this.embeddingModel = process.env.GOOGLE_EMBEDDING_MODEL || '';
-    this.chatModel = process.env.GOOGLE_CHAT_MODEL || '';
+    this.embeddingModel = process.env.GOOGLE_EMBEDDING_MODEL || 'models/gemini-embedding-001';
+    this.chatModel = process.env.GOOGLE_CHAT_MODEL || 'models/gemma-3-4b-it';
+    this.embeddingDims = Number(process.env.GOOGLE_EMBEDDING_DIMS || '3072');
 
     if (!this.googleApiKey) {
       throw new Error('Google API key is not set in environment variables.');
@@ -33,20 +35,17 @@ export class GoogleClient {
 
     for(const text of texts) {
       try {
-        const model = this.genAI.getGenerativeModel({ model: 'embedding-001' });
+        const model = this.genAI.getGenerativeModel({ model: this.embeddingModel});
         const result = await model.embedContent(text);
         
-        if (result.embedding && result.embedding.values) {
-          embeddings.push(result.embedding.values);
+        if (result.embedding?.values) {
+            embeddings.push(result.embedding.values);
         } else {
-          console.log(`No embedding returned for text: ${text}`);
-          const dummySize = 768;
-          embeddings.push(new Array(dummySize).fill(0));
+          embeddings.push(new Array(this.embeddingDims).fill(0));
         }
       } catch (error) {
         console.log(`Error generating embedding for text: ${text}`, error);
-        const dummySize = 768;
-        embeddings.push(new Array(dummySize).fill(0));
+        embeddings.push(new Array(this.embeddingDims).fill(0));
       }
     }
 

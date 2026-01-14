@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
-import { getGoogleClient, GoogleEmbeddings, ChatMessage } from './google-client';
+import { getGoogleClient, GoogleEmbeddings, ChatMessage } from './google-client.js';
 import { PGVectorStore } from '@langchain/community/vectorstores/pgvector';
+import type { VectorStoreRetriever } from '@langchain/core/vectorstores';
 
 config();
 
@@ -38,6 +39,7 @@ export class RAGSearch {
   private embeddings: GoogleEmbeddings;
   private googleClient: any;
   private vectorStore: PGVectorStore | null = null;
+  private retriever: VectorStoreRetriever<PGVectorStore> | null = null;
 
   constructor() {
     // Load environment variables
@@ -48,6 +50,7 @@ export class RAGSearch {
     this.embeddings = new GoogleEmbeddings();
     this.googleClient = getGoogleClient();
     this.vectorStore = null;
+    this.retriever = null;
 
     this._initializeVectorStore();
   }
@@ -67,6 +70,9 @@ export class RAGSearch {
           metadataColumnName: 'metadata',
         },
       });
+
+      // Initialize Retriever with v1 pattern
+      this.retriever = this.vectorStore.asRetriever({ k: 10 });
 
       console.log('RAG System: Connection to vector database established ')
     } catch (error) {
@@ -161,7 +167,16 @@ export class RAGSearch {
         isReady: true,
         chunksCount: testResults.length > 0 ? -1 : 0 // -1 means "there are documents, but we don't know how many
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      // Log the error for debugging
+      const errorStr = String(error);
+      console.log(`Status check error: ${errorStr.substring(0, 200)}`);
+      
+      // If rate limit error (429), assume system is ready but API is throttled
+      if (errorStr.includes('429') || errorStr.includes('Too Many Requests') || errorStr.includes('quota')) {
+        console.log('Warning: API rate limit hit during status check. Assuming system is ready.');
+        return { isReady: true, chunksCount: -1 };
+      }
       return { isReady: false, chunksCount: 0 };
     }
   }

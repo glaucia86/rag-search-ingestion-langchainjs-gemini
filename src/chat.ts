@@ -1,5 +1,5 @@
 import { createInterface } from "readline";
-import { searchPrompt, RAGSearch } from "./search";
+import { searchPrompt, RAGSearch } from "./search.js";
 
 // Function to print initial banner with system informations
 function printBanner(): void {

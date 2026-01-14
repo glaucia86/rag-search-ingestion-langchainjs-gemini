@@ -1,7 +1,7 @@
 import { config } from 'dotenv';
 import { Document } from '@langchain/core/documents';
 import { PGVectorStore } from '@langchain/community/vectorstores/pgvector';
-import { GoogleEmbeddings } from './google-client';
+import { GoogleEmbeddings } from './google-client.js';
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 import { PDFLoader as LangChainPDFLoader } from '@langchain/community/document_loaders/fs/pdf';
 
