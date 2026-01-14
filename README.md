@@ -2,7 +2,7 @@
 
 ![Node.js](https://img.shields.io/badge/Node.js-22+-339933?style=for-the-badge&logo=node.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9+-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![LangChain](https://img.shields.io/badge/LangChain.js-0.3+-00A86B?style=for-the-badge&logo=chainlink&logoColor=white)
+![LangChain](https://img.shields.io/badge/LangChain.js-v1.0-00A86B?style=for-the-badge&logo=chainlink&logoColor=white)
 ![Google Gemini](https://img.shields.io/badge/Google%20Gemini-API-4285F4?style=for-the-badge&logo=google&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-336791?style=for-the-badge&logo=postgresql&logoColor=white)
 ![pgVector](https://img.shields.io/badge/pgVector-Extension-336791?style=for-the-badge&logo=postgresql&logoColor=white)

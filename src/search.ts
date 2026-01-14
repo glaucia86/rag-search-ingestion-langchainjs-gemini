@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 import { getGoogleClient, GoogleEmbeddings, ChatMessage } from './google-client';
 import { PGVectorStore } from '@langchain/community/vectorstores/pgvector';
+import type { VectorStoreRetriever } from '@langchain/core/vectorstores';
 
 config();
 
@@ -38,6 +39,7 @@ export class RAGSearch {
   private embeddings: GoogleEmbeddings;
   private googleClient: any;
   private vectorStore: PGVectorStore | null = null;
+  private retriever: VectorStoreRetriever<PGVectorStore> | null = null;
 
   constructor() {
     // Load environment variables
@@ -48,6 +50,7 @@ export class RAGSearch {
     this.embeddings = new GoogleEmbeddings();
     this.googleClient = getGoogleClient();
     this.vectorStore = null;
+    this.retriever = null;
 
     this._initializeVectorStore();
   }
@@ -67,6 +70,9 @@ export class RAGSearch {
           metadataColumnName: 'metadata',
         },
       });
+
+      // Initialize Retriever with v1 pattern
+      this.retriever = this.vectorStore.asRetriever({ k: 10 });
 
       console.log('RAG System: Connection to vector database established ')
     } catch (error) {

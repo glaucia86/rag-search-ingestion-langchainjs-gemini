@@ -6,7 +6,7 @@ A implementação de sistemas de Retrieval-Augmented Generation (RAG) representa
 
 Nossa solução permite que usuários façam perguntas em linguagem natural sobre documentos PDF, combinando busca semântica avançada com geração de respostas contextuais precisas. O sistema demonstra como integrar tecnologias de ponta para criar aplicações de IA práticas e escaláveis, abordando desde a extração e processamento de documentos até a geração de respostas contextualmente relevantes.
 
-As tecnologias principais que formam o backbone desta implementação incluem Node.js versão 22 ou superior para runtime JavaScript moderno, TypeScript 5.9 ou superior para tipagem estática robusta, LangChain.js 0.3 ou superior como framework de orquestração de IA, Google Gemini API para embeddings e geração de texto, PostgreSQL 15 ou superior com a extensão pgVector para armazenamento e busca vetorial, e Docker para containerização e implantação simplificada.
+As tecnologias principais que formam o backbone desta implementação incluem Node.js versão 22 ou superior para runtime JavaScript moderno, TypeScript 5.9 ou superior para tipagem estática robusta, LangChain.js v1 (`@langchain/core` ^1.1.13, `langchain` ^1.2.8) como framework de orquestração de IA, Google Gemini API para embeddings e geração de texto, PostgreSQL 15 ou superior com a extensão pgVector para armazenamento e busca vetorial, e Docker para containerização e implantação simplificada.
 
 > observação: como muitos já sabem, estou fazendo o **[MBA em Engenheria de Software em A.I na FullCycle](https://ia.fullcycle.com.br/mba-ia/?utm_source=google_search&utm_campaign=search_mba-arquitetura&utm_medium=curso_especifico&utm_content=search_mba-arquitetura&gad_source=1&gad_campaignid=21917349974&gclid=Cj0KCQjww4TGBhCKARIsAFLXndQejvz0K1XTOHQ3CSglzOlQfVH64T2CS1qZnwkiyChx0HoXzaK4KY0aAosOEALw_wcB)**, e este artigo é baseado em um dos projetos práticos do curso. Não estou fazendo jabá, apenas compartilhando o conhecimento aprendido e para que outros possam se beneficiar também. Mas, caso queira saber mais sobre o MBA, clique no link anterior.
 
@@ -162,10 +162,10 @@ Este comando cria o arquivo `package.json` com configurações padrão.
 As dependências de produção incluem pacotes essenciais para funcionalidade do sistema:
 
 ```bash
-npm install @google/generative-ai @langchain/core @langchain/community @langchain/textsplitters dotenv pg uuid
+npm install @google/generative-ai @langchain/core @langchain/community @langchain/textsplitters langchain dotenv pg uuid
 ```
 
-Estas bibliotecas fornecem integração com Google AI, framework LangChain, manipulação de variáveis de ambiente, conexão PostgreSQL e geração de identificadores únicos.
+Estas bibliotecas fornecem integração com Google AI, framework LangChain v1 (incluindo o pacote `langchain` obrigatório na v1), manipulação de variáveis de ambiente, conexão PostgreSQL e geração de identificadores únicos.
 
 As dependências de desenvolvimento garantem experiência de desenvolvimento robusta:
 
