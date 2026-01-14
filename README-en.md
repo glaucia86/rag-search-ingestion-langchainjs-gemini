@@ -2,7 +2,7 @@
 
 ![Node.js](https://img.shields.io/badge/Node.js-22+-339933?style=for-the-badge&logo=node.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9+-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![LangChain](https://img.shields.io/badge/LangChain.js-0.3+-00A86B?style=for-the-badge&logo=chainlink&logoColor=white)
+![LangChain](https://img.shields.io/badge/LangChain.js-1.x+-00A86B?style=for-the-badge&logo=chainlink&logoColor=white)
 ![Google Gemini](https://img.shields.io/badge/Google%20Gemini-API-4285F4?style=for-the-badge&logo=google&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-336791?style=for-the-badge&logo=postgresql&logoColor=white)
 ![pgVector](https://img.shields.io/badge/pgVector-Extension-336791?style=for-the-badge&logo=postgresql&logoColor=white)
@@ -53,12 +53,12 @@ This project implements a complete RAG system that allows natural language quest
 
 ### AI & Machine Learning
 - **Google Gemini API** - Language model for embeddings and chat
-- **models/embedding-001** - Model for creating embeddings
-- **gemini-2.0-flash** - Model for response generation
+- **models/gemini-embedding-001** - Model for creating embeddings
+- **models/gemma-3-4b-it** - Model for response generation
 
 ### Document Processing
-- **pdf-parse** - PDF text extraction
-- **RecursiveCharacterTextSplitter** - Intelligent text splitting
+- **@langchain/community/document_loaders** - PDF text extraction via LangChain PDFLoader
+- **@langchain/textsplitters** - Intelligent text splitting with RecursiveCharacterTextSplitter
 
 ## 🏗 Architecture
 
@@ -119,9 +119,18 @@ npm install
 Create a `.env` file in the project root:
 
 ```env
+# Google AI Studio API Key (REQUIRED)
+# Get it at: https://aistudio.google.com/apikey
 GOOGLE_API_KEY=your_google_api_key_here
-GOOGLE_EMBEDDING_MODEL=models/embedding-001
-GOOGLE_CHAT_MODEL=gemini-2.0-flash
+
+# Embeddings (you can choose your preferred model)
+GOOGLE_EMBEDDING_MODEL=models/gemini-embedding-001
+GOOGLE_EMBEDDING_DIMS=3072
+
+# Chat / generation (you can choose your preferred model)
+GOOGLE_CHAT_MODEL=models/gemma-3-4b-it
+
+# Database Configuration
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/rag
 PG_VECTOR_COLLECTION_NAME=pdf_documents
 PDF_PATH=./document.pdf

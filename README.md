@@ -170,7 +170,7 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 ![Node.js](https://img.shields.io/badge/Node.js-22+-339933?style=for-the-badge&logo=node.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9+-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![LangChain](https://img.shields.io/badge/LangChain.js-0.3+-00A86B?style=for-the-badge&logo=chainlink&logoColor=white)
+![LangChain](https://img.shields.io/badge/LangChain.js-1.x+-00A86B?style=for-the-badge&logo=chainlink&logoColor=white)
 ![Google Gemini](https://img.shields.io/badge/Google%20Gemini-API-4285F4?style=for-the-badge&logo=google&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-336791?style=for-the-badge&logo=postgresql&logoColor=white)
 ![pgVector](https://img.shields.io/badge/pgVector-Extension-336791?style=for-the-badge&logo=postgresql&logoColor=white)
@@ -222,12 +222,12 @@ Este projeto implementa um sistema RAG completo que permite fazer perguntas em l
 
 ### IA & Machine Learning
 - **Google Gemini API** - Modelo de linguagem para embeddings e chat
-- **models/embedding-001** - Modelo para criar embeddings
-- **gemini-2.0-flash** - Modelo para geração de respostas
+- **models/gemini-embedding-001** - Modelo para criar embeddings
+- **models/gemma-3-4b-it** - Modelo para geração de respostas
 
 ### Processamento de Documentos
-- **pdf-parse** - Extração de texto de PDFs
-- **RecursiveCharacterTextSplitter** - Divisão inteligente de texto
+- **@langchain/community/document_loaders** - Extração de texto de PDFs via LangChain PDFLoader
+- **@langchain/textsplitters** - Divisão inteligente de texto com RecursiveCharacterTextSplitter
 
 ## 🏗 Arquitetura
 
@@ -287,18 +287,21 @@ npm install
 Crie um arquivo `.env` na raiz do projeto:
 
 ```env
-# Google AI API Configuration
+# Google AI Studio API Key (OBRIGATÓRIO)
+# Obtenha em: https://aistudio.google.com/apikey
 GOOGLE_API_KEY=sua_api_key_aqui
 
-# Database Configuration
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=rag
-DB_USER=postgres
-DB_PASSWORD=postgres
+# Embeddings (pode escolher seu modelo preferido)
+GOOGLE_EMBEDDING_MODEL=models/gemini-embedding-001
+GOOGLE_EMBEDDING_DIMS=3072
 
-# Vector Database Configuration
-VECTOR_DIMENSION=768
+# Chat / generation (pode escolher seu modelo preferido)
+GOOGLE_CHAT_MODEL=models/gemma-3-4b-it
+
+# Database Configuration
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/rag
+PG_VECTOR_COLLECTION_NAME=pdf_documents
+PDF_PATH=./document.pdf
 ```
 
 ### 4. Obtenha sua Google API Key

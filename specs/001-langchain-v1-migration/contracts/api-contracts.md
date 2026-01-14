@@ -77,14 +77,14 @@ export class GoogleEmbeddings extends Embeddings {
   /**
    * Gera embeddings para múltiplos textos
    * @param texts - Array de strings para embedding
-   * @returns Promise com array de vetores (768 dimensões cada)
+   * @returns Promise com array de vetores (3072 dimensões cada)
    */
   embedDocuments(texts: string[]): Promise<number[][]>;
   
   /**
    * Gera embedding para uma única query
    * @param text - String para embedding
-   * @returns Promise com vetor de 768 dimensões
+   * @returns Promise com vetor de 3072 dimensões
    */
   embedQuery(text: string): Promise<number[]>;
 }
